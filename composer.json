@@ -1,0 +1,11 @@
+{
+	"name": "infrajs/cache",
+	"description": "Cache based on files and modified time",
+	"license": "GPL3",
+	"require": {
+		"infrajs/once":"~1"
+	 },
+	 "autoload": {
+		"psr-4": { "infrajs\\cache\\": "/" }
+	},
+}
