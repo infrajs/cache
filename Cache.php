@@ -9,31 +9,9 @@ Cache::exec(true,'somefn',array($arg1,$arg2)); - выполняется всег
 Cache::exec(true,'somefn',array($arg1,$arg2),$data); - Установка нового значения в кэше 
 */
 class Cache {
-	public static function fullrmdir($delfile, $ischild = true)
+	public static function fullrmdir($delfile, $ischild = false)
 	{
-		$delfile = Path::theme($delfile);
-		if (file_exists($delfile)) {		
-			if (is_dir($delfile)) {
-				$handle = opendir($delfile);
-				while ($filename = readdir($handle)) {
-					if ($filename != '.' && $filename != '..') {
-						$src = $delfile.$filename;
-						if (is_dir($src)) $src .= '/';
-						$r=static::fullrmdir($src, true);
-						if(!$r)return false;
-					}
-				}
-				closedir($handle);
-				if ($ischild) {
-					return rmdir($delfile);
-				}
-
-				return true;
-			} else {
-				return unlink($delfile);
-			}
-		}
-		return true;
+		return Path::fullrmdir($delfile, $ischild);
 	}
 	
 	public static function exec($conds, $name, $fn, $args = array(), $re = false)
