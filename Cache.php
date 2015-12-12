@@ -2,16 +2,16 @@
 namespace infrajs\cache;
 use infrajs\once\Once;
 use infrajs\mem\Mem;
+use infrajs\access\Access;
+use infrajs\path\Path;
 /*
 Cache::exec(true,'somefn',array($arg1,$arg2)); - выполняется всегда
 Cache::exec(true,'somefn',array($arg1,$arg2),$data); - Установка нового значения в кэше 
 */
 class Cache {
-	public static $conf=array();
 	public static function fullrmdir($delfile, $ischild = true)
 	{
-		$conf=static::$conf;
-		$delfile = $conf['theme']($delfile);
+		$delfile = Path::theme($delfile);
 		if (file_exists($delfile)) {		
 			if (is_dir($delfile)) {
 				$handle = opendir($delfile);
@@ -35,27 +35,24 @@ class Cache {
 		}
 		return true;
 	}
-	public static function isTime($time, $call){
-		return $call($time);
-	}
+	
 	public static function exec($conds, $name, $fn, $args = array(), $re = false)
 	{
 		$name = 'Cache::exec'.$name;
 		return Once::exec($name, function ($args, $r, $hash) use ($name, $fn, $conds, $re) {
 			$data = Mem::get($hash);
-
 			if (!$data) {
 				$data = array('time' => 0);
 			}
-			$execute = Cache::isTime($data['time'], function ($cache_time) use ($conds) {
+			$execute = Access::adminIsTime($data['time'], function ($cache_time) use ($conds) {
+
 				if (!sizeof($conds)) {
 					return false;//Если нет conds кэш навсегда и develop не поможет
 				}
-				$conf=Cache::$conf;
 				$max_time = 1;
-				for ($i = 0, $l = sizeof($conds); $i < $l; ++$i) {
+				for ($i = 0, $l = sizeof($conds); $i < $l; $i++) {
 					$mark = $conds[$i];
-					$mark = $conf['theme']($mark);
+					$mark = Path::theme($mark);
 					if (!$mark) {
 						continue;
 					}
@@ -63,6 +60,7 @@ class Cache {
 					if ($m > $max_time) {
 						$max_time = $m;
 					}
+
 					if (!is_dir($mark)) {
 						continue;
 					}
@@ -90,7 +88,7 @@ class Cache {
 			}
 
 			return $data['result'];
-		}, array($args));
+		}, array($args), $re);
 	}
 	public static function clear($name, $args = array())
 	{
@@ -138,15 +136,3 @@ class Cache {
 		return $cache_after;
 	}
 }
-Cache::$conf=array(
-	'theme'=>function($src){
-		$s=__DIR__.'/../../../'.$src;
-		if (!file_exists($s)) return false;
-		$s=realpath($s);
-		$root=realpath(__DIR__.'/../../../');
-
-		if(strpos($s, $root) !== 0) return false;
-
-		return $s;
-	}
-);
