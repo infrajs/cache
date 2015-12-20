@@ -4,6 +4,7 @@ use infrajs\once\Once;
 use infrajs\mem\Mem;
 use infrajs\access\Access;
 use infrajs\path\Path;
+use infrajs\nostore\Nostore;
 /*
 Cache::exec(true,'somefn',array($arg1,$arg2)); - выполняется всегда
 Cache::exec(true,'somefn',array($arg1,$arg2),$data); - Установка нового значения в кэше 
@@ -54,7 +55,7 @@ class Cache {
 			}, $re);
 
 			if ($execute) {
-				$cache = static::check(function () use (&$data, $fn, $args, $re) {
+				$cache = Nostore::check(function () use (&$data, $fn, $args, $re) {
 					$data['result'] = call_user_func_array($fn, array_merge($args, array($re)));
 				});
 				if ($cache) {

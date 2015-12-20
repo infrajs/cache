@@ -4,6 +4,7 @@
 	"license": "GPL3",
 	"require": {
 		"infrajs/once":"~1",
+		"infrajs/nostore":"~1",
 		"infrajs/mem":"~1"
 	 },
 	 "autoload": {
