@@ -1,5 +1,6 @@
 {
 	"name": "infrajs/cache",
+	"homepage":"https://github.com/infrajs/cache",
 	"description": "Cache based on files and modified time",
 	"license": "GPL3",
 	"require": {
