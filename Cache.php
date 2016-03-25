@@ -19,10 +19,8 @@ class Cache {
 	{
 		$name = 'Cache::exec'.$name;
 		return Once::exec($name, function ($args, $r, $hash) use ($name, $fn, $conds, $re) {
-			$data = Mem::get($hash);
-			if (!$data) {
-				$data = array('time' => 0);
-			}
+			$data = Mem::get($name.$hash);
+			if (!$data) $data = array('time' => 0);
 			$execute = Access::adminIsTime($data['time'], function ($cache_time) use ($conds) {
 
 				if (!sizeof($conds)) {
@@ -60,9 +58,9 @@ class Cache {
 				});
 				if ($cache) {
 					$data['time'] = time();
-					Mem::set($hash, $data);
+					Mem::set($name.$hash, $data);
 				} else {
-					Mem::delete($hash);
+					Mem::delete($name.$hash);
 				}
 			}
 
