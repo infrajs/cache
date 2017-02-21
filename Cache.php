@@ -56,7 +56,7 @@ class Cache {
 				$is = Nostore::check(function () use (&$data, $fn, $args, $re) { //Проверка был ли запрет кэша
 					$data['result'] = call_user_func_array($fn, array_merge($args, array($re)));
 				});
-				if (!$is) {
+				if (!$is && !$re) { //При $re кэш не сохраняется. Это позволяет запустит Cache::exec до установи расширений в Search
 					$data['time'] = time();
 					Mem::set($name.$hash, $data);
 				} else {
