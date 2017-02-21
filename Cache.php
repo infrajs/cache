@@ -53,10 +53,10 @@ class Cache {
 			}, $re);
 
 			if ($execute) {
-				$cache = Nostore::check(function () use (&$data, $fn, $args, $re) {
+				$is = Nostore::check(function () use (&$data, $fn, $args, $re) {
 					$data['result'] = call_user_func_array($fn, array_merge($args, array($re)));
 				});
-				if ($cache) {
+				if (!$is) {
 					$data['time'] = time();
 					Mem::set($name.$hash, $data);
 				} else {
