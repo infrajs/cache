@@ -53,7 +53,7 @@ class Cache {
 			}, $re);
 
 			if ($execute) {
-				$is = Nostore::check(function () use (&$data, $fn, $args, $re) {
+				$is = Nostore::check(function () use (&$data, $fn, $args, $re) { //Проверка был ли запрет кэша
 					$data['result'] = call_user_func_array($fn, array_merge($args, array($re)));
 				});
 				if (!$is) {
