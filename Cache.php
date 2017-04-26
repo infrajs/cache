@@ -14,12 +14,15 @@ class Cache {
 	{
 		return Path::fullrmdir($delfile, $ischild);
 	}
-	
-	public static function exec($conds, $name, $fn, $args = array(), $re = false)
+	public static function execF($conds, $name, $fn, $args = array(), $re = false)
+	{
+		return Cache::exec($conds, $name, $fn, $args, $re, true);
+	}
+	public static function exec($conds, $name, $fn, $args = array(), $re = false, $savetofile = false)
 	{
 		$name = 'Cache::exec'.$name;
-		return Once::exec($name, function ($args, $r, $hash) use ($name, $fn, $conds, $re) {
-			$data = Mem::get($name.$hash);
+		return Once::exec($name, function ($args, $r, $hash) use ($name, $fn, $conds, $re, $savetofile) {
+			$data = Mem::get($name.$hash, $savetofile);
 			if (!$data) $data = array('time' => 0);
 			$execute = Access::adminIsTime($data['time'], function ($cache_time) use ($conds) {
 
@@ -58,7 +61,7 @@ class Cache {
 				});
 				if (!$is && !$re) { //При $re кэш не сохраняется. Это позволяет запустит Cache::exec до установи расширений в Search
 					$data['time'] = time();
-					Mem::set($name.$hash, $data);
+					Mem::set($name.$hash, $data, $savetofile);
 				} else {
 					Mem::delete($name.$hash);
 				}
