@@ -26,7 +26,10 @@ class Cache
 	{
 		$hash = json_encode($args, JSON_UNESCAPED_UNICODE);
 		$key = $name . $hash;
-		if (isset(Cache::$once[$key])) return Cache::$once[$key];
+		if (isset(Cache::$once[$key])) {
+			if (Cache::$once[$key]['nostore']) Nostore::on();
+			return Cache::$once[$key]['result'];
+		}
 
 
 		$data = Mem::get($key, $savetofile);
@@ -72,9 +75,11 @@ class Cache
 			} else {
 				Mem::delete($key);
 			}
+		} else {
+			$is = false;
 		}
-
-		return Cache::$once[$key] = $data['result'];
+		Cache::$once[$key] = ['result' => $data['result'], 'nostore' => $is];
+		return Cache::$once[$key]['result'];
 	}
 	public static function clear($name, $args = array())
 	{
