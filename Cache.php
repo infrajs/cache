@@ -39,9 +39,11 @@ class Cache
 			if (!sizeof($conds)) {
 				return false; //Если нет conds кэш навсегда и develop не поможет
 			}
+
 			$max_time = 1;
 			for ($i = 0, $l = sizeof($conds); $i < $l; $i++) {
 				$mark = $conds[$i];
+				if ($mark === true) return true;
 				$mark = Path::theme($mark);
 				if (!$mark) {
 					continue;
@@ -61,10 +63,9 @@ class Cache
 					}
 				}
 			}
-
 			return $max_time > $cache_time;
 		}, $re);
-
+		
 		if ($execute) {
 			$is = Nostore::check(function () use (&$data, $fn, $args, $re) { //Проверка был ли запрет кэша
 				$data['result'] = call_user_func_array($fn, array_merge($args, array($re)));
